@@ -1,1 +1,1 @@
-export { default } from './contacts.style';
+export {default} from './contactsList';

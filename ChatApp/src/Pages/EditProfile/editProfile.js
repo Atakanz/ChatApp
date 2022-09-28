@@ -1,12 +1,12 @@
 import React from 'react';
-import { SafeAreaView, Text } from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 
-function EditProfile() {
+const EditProfile = () => {
   return (
     <SafeAreaView>
       <Text>Hello EditProfile!</Text>
     </SafeAreaView>
   );
-}
+};
 
 export default EditProfile;

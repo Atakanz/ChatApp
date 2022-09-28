@@ -1,1 +1,1 @@
-export { default } from './cameraScreen';
+export {default} from './cameraScreen';

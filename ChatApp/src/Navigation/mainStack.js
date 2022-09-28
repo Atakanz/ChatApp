@@ -1,20 +1,22 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { signInWithEmailAndPassword } from 'firebase/auth';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomTab } from './bottomTab';
+import {BottomTab} from './bottomTab';
 // import { setUser } from '../Management/Features/User/userSlice';
 // import { auth } from '../../config';
-import { LoginStack } from './loginStack';
+import LoginStack from './loginStack';
 import CameraScreen from '../Pages/CameraScreen';
+import settingStack from './settingsStack';
+import Map from '../Pages/Map';
 
 const Stack = createNativeStackNavigator();
 
-export function MainStack() {
-//   const dispatch = useDispatch();
-//   const user = useSelector((state) => state.user.user);
+export const MainStack = () => {
+  //   const dispatch = useDispatch();
+  //   const user = useSelector((state) => state.user.user);
   //   const getSavedItem = async () => {
   //     const userData = await AsyncStorage.getItem('savedUser');
   //     console.log('loginUser', userData);
@@ -32,16 +34,18 @@ export function MainStack() {
   //   console.log('mains', user);
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{
-        headerShown: false,
-      }}
-      >
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
         <Stack.Screen name="Login" component={LoginStack} />
         <Stack.Screen name="BottomTab" component={BottomTab} />
+        <Stack.Screen name="Settings" component={settingStack} />
         <Stack.Screen name="Camera" component={CameraScreen} />
+        <Stack.Screen name="Map" component={Map} />
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 export default MainStack;

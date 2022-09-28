@@ -1,21 +1,16 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {useSelector} from 'react-redux';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import { useSelector } from 'react-redux';
 import ContactsList from '../Pages/ContactsList';
 import MessagesList from '../Pages/MessagesList';
-import { SettingStack } from './statusSettingsStack';
+import Status from '../Pages/StatusPage';
 
 const Tab = createBottomTabNavigator();
 
-export function BottomTab() {
-  const theme = useSelector((state) => state.theme.theme);
+export const BottomTab = () => {
+  const theme = useSelector(state => state.theme.theme);
   const colorSelect = theme === 'Dark' ? '#fff' : '#212121';
-  const firstIcon = <Icon name="account-group" color={colorSelect} size={25} />;
-
-  const secondIcon = <Icon name="comment-text-multiple" color={colorSelect} size={25} />;
-
-  const thirdIcon = <Icon name="progress-upload" color={colorSelect} size={25} />;
 
   return (
     <Tab.Navigator
@@ -23,29 +18,34 @@ export function BottomTab() {
         headerShown: false,
         tabBarInactiveBackgroundColor: theme === 'Dark' ? '#212121' : '#fff',
         tabBarActiveBackgroundColor: theme === 'Dark' ? '#212121' : '#fff',
-      }}
-    >
+      }}>
       <Tab.Screen
-        name="Contacts"
+        name="ContactsList"
         component={ContactsList}
         options={{
-          tabBarIcon: { firstIcon },
+          tabBarIcon: ({color, size}) => (
+            <Icon name="account-group" color={colorSelect} size={30} />
+          ),
         }}
       />
       <Tab.Screen
         name="MessageList"
         component={MessagesList}
         options={{
-          tabBarIcon: { secondIcon },
+          tabBarIcon: ({color, size}) => (
+            <Icon name="comment-text-multiple" color={colorSelect} size={30} />
+          ),
         }}
       />
       <Tab.Screen
         name="Status"
-        component={SettingStack}
+        component={Status}
         options={{
-          tabBarIcon: { thirdIcon },
+          tabBarIcon: ({color, size}) => (
+            <Icon name="progress-upload" color={colorSelect} size={30} />
+          ),
         }}
       />
     </Tab.Navigator>
   );
-}
+};

@@ -21,6 +21,9 @@ const SignUp = ({navigation}) => {
         await setDoc(doc(db, 'users', response.user.uid), {
           email: response.user.email,
           id: response.user.uid,
+          name: newUserName,
+          surname: newUserSurname,
+          photoUrl: null,
         });
       },
     );
@@ -38,7 +41,6 @@ const SignUp = ({navigation}) => {
   return (
     <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>
       <LoginForm
-        logo={require('../../Assets/logoInTouch.png')}
         brandName={require('../../Assets/brandName.png')}
         holder1="E-mail"
         holder2="Password"

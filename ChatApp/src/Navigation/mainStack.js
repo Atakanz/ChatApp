@@ -9,6 +9,7 @@ import {setUser} from '../Management/Features/userSlice';
 import {auth} from '../../config';
 import LoginStack from './loginStack';
 import CameraScreen from '../Pages/CameraScreen';
+import ChatPage from '../Pages/ChatPage';
 import settingStack from './settingsStack';
 import Map from '../Pages/Map';
 
@@ -34,10 +35,7 @@ export const MainStack = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         {!user ? (
           <>
             <Stack.Screen name="Login" component={LoginStack} />
@@ -45,6 +43,7 @@ export const MainStack = () => {
         ) : (
           <>
             <Stack.Screen name="BottomTab" component={BottomTab} />
+            <Stack.Screen name="ChatPage" component={ChatPage} />
             <Stack.Screen name="Settings" component={settingStack} />
             <Stack.Screen name="Camera" component={CameraScreen} />
             <Stack.Screen name="Map" component={Map} />

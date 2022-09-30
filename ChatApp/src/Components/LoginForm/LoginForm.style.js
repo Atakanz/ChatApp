@@ -22,7 +22,7 @@ export default StyleSheet.create({
   brandName: {
     marginTop: 10,
     width: 188,
-    height: 50,
+    height: 65,
   },
   buttonColumn: {
     flexDirection: 'column',
@@ -41,5 +41,8 @@ export default StyleSheet.create({
   },
   sloganTextDark: {
     color: '#fff',
+  },
+  centerText: {
+    alignItems: 'center',
   },
 });

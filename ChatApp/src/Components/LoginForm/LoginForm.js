@@ -11,7 +11,6 @@ const LoginForm = props => {
     <SafeAreaView style={styles.enabledDirection}>
       <View>
         <View style={styles.logoView}>
-          {props.logo && <Image style={styles.logo} source={props.logo} />}
           {props.brandName && (
             <Image style={styles.brandName} source={props.brandName} />
           )}
@@ -64,18 +63,23 @@ const LoginForm = props => {
       </View>
       <View style={styles.buttonColumn}>
         {props.name1 && <Buttons name={props.name1} task={props.task1} />}
-        {props.name2 && (
-          <Text style={[styles.isAccountText, styles[`isAccountText${theme}`]]}>
-            Don't you have an account?
-          </Text>
-        )}
+        <View style={styles.centerText}>
+          {props.name2 && (
+            <Text
+              style={[styles.isAccountText, styles[`isAccountText${theme}`]]}>
+              Don't you have an account?
+            </Text>
+          )}
+        </View>
         {props.name2 && <Buttons name={props.name2} task={props.task2} />}
         {/* signup page only has one button to navigate re-signın page. */}
-        {props.slogan && (
-          <Text style={[styles.sloganText, styles[`sloganText${theme}`]]}>
-            {props.slogan}
-          </Text>
-        )}
+        <View style={styles.centerText}>
+          {props.slogan && (
+            <Text style={[styles.sloganText, styles[`sloganText${theme}`]]}>
+              {props.slogan}
+            </Text>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );

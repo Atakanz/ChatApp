@@ -1,7 +1,8 @@
 import React from 'react';
-import {StyleSheet, Pressable, Image} from 'react-native';
+import {StyleSheet, Pressable, Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useSelector} from 'react-redux';
+import {StatusBar} from 'expo-status-bar';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import ContactsList from '../Pages/ContactsList';
 import MessagesList from '../Pages/MessagesList';
@@ -17,7 +18,7 @@ export const BottomTab = ({navigation}) => {
       name="pencil-outline"
       size={30}
       color={colorSelect}
-      style={{marginRight: 15}}
+      style={styles.rightIcon}
     />
   );
 
@@ -36,16 +37,18 @@ export const BottomTab = ({navigation}) => {
           right: 0,
           bottom: 0,
           elevation: 0,
-          borderWidth: 1,
         },
         headerStyle: {
-          backgroundColor: '#7AADEA',
+          backgroundColor: theme === 'Dark' ? '#212121' : '#20b2aa',
         },
         headerBackground: () => (
-          <Image
-            style={styles.logo}
-            source={require('../Assets/brandName.png')}
-          />
+          <View style={[styles.logoView, styles[`logoView${theme}`]]}>
+            <StatusBar style={theme === 'Dark' ? 'light' : 'dark'} />
+            <Image
+              style={styles.logo}
+              source={require('../Assets/brandName.png')}
+            />
+          </View>
         ),
       }}>
       <Tab.Screen
@@ -90,6 +93,18 @@ const styles = StyleSheet.create({
     bottom: 1,
     width: 125,
     height: 45,
-    marginLeft: 5,
+  },
+  logoView: {
+    height: '100%',
+    width: '100%',
+  },
+  logoViewDark: {
+    backgroundColor: '#212121',
+  },
+  logoViewLight: {
+    backgroundColor: '#fff',
+  },
+  rightIcon: {
+    marginRight: 15,
   },
 });

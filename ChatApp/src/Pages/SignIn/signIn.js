@@ -1,16 +1,31 @@
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import LoginForm from '../../Components/LoginForm';
 import styles from './signIn.styles';
+import {logIn} from '../../Management/Features/userSlice';
+import {signInWithEmailAndPassword} from 'firebase/auth';
+import {doc, getDoc} from 'firebase/firestore';
+import {auth, db} from '../../../config';
 
 const SignIn = ({navigation}) => {
+  const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.theme);
   const [userEmail, setUserEmail] = useState(null);
   const [userPassword, setUserPassword] = useState(null);
-  // const loginUserButton = () => {
-  //   navigation.navigate('SignUp');
-  // };
+  const signInButton = () => {
+    signInWithEmailAndPassword(auth, userEmail, userPassword)
+      .then(async response => {
+        const userDoc = doc(db, 'users', response.user.uid);
+        const userRef = await getDoc(userDoc);
+        if (userRef.exists()) {
+          dispatch(logIn({mail: userEmail, password: userPassword}));
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   const signUpButton = () => {
     navigation.navigate('SignUp');
   };
@@ -18,7 +33,6 @@ const SignIn = ({navigation}) => {
   return (
     <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>
       <LoginForm
-        logo={require('../../Assets/logoInTouch.png')}
         brandName={require('../../Assets/brandName.png')}
         holder1="E-mail"
         holder2="Password"
@@ -28,11 +42,11 @@ const SignIn = ({navigation}) => {
         value2={userPassword}
         emailFormTask={value => setUserEmail(value)}
         passwordFormTask={value => setUserPassword(value)}
-        task1={signUpButton}
+        task1={signInButton}
         task2={signUpButton}
         securityFalse={false}
         securityTrue={true}
-        slogan="Keep in touch with friends."
+        slogan="Dive into deep talk with friends!"
       />
     </SafeAreaView>
   );

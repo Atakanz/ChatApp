@@ -11,6 +11,7 @@ import LoginStack from './loginStack';
 import CameraScreen from '../Pages/CameraScreen';
 import ChatPage from '../Pages/ChatPage';
 import settingStack from './settingsStack';
+import ChatPageHeader from '../Components/ChatPageHeader/ChatPageHeader';
 import Map from '../Pages/Map';
 
 const Stack = createNativeStackNavigator();
@@ -43,7 +44,20 @@ export const MainStack = () => {
         ) : (
           <>
             <Stack.Screen name="BottomTab" component={BottomTab} />
-            <Stack.Screen name="ChatPage" component={ChatPage} />
+            <Stack.Screen
+              options={({route}) => ({
+                headerShown: true,
+                headerStyle: {backgroundColor: '#00B0F0'},
+                headerTitle: () => (
+                  <ChatPageHeader
+                    name={route.params.name}
+                    src={route.params.link}
+                  />
+                ),
+              })}
+              name="ChatPage"
+              component={ChatPage}
+            />
             <Stack.Screen name="Settings" component={settingStack} />
             <Stack.Screen name="Camera" component={CameraScreen} />
             <Stack.Screen name="Map" component={Map} />

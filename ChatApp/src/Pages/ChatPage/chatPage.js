@@ -1,45 +1,65 @@
-import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  TextInput,
-  FlatList,
-  View,
-  ImageBackground,
-} from 'react-native';
-import moment from 'moment';
-import ChatPageHeader from '../../Components/ChatPageHeader/ChatPageHeader';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React, {useState, useEffect} from 'react';
+import {SafeAreaView, FlatList, View, ImageBackground} from 'react-native';
+import {db, auth} from '../../../config';
 import MessageUnit from '../../Components/MessageUnit/MessageUnit';
 import styles from './chatPage.style';
-import {useSelector} from 'react-redux';
-import {collection, query} from 'firebase/firestore';
+import {useDispatch, useSelector} from 'react-redux';
+import ChatPageFooter from '../../Components/ChatPageFooter/ChatPageFooter';
+import {
+  collection,
+  query,
+  where,
+  getDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+  Timestamp,
+} from 'firebase/firestore';
 
 const ChatPage = ({navigation, route}) => {
   const theme = useSelector(state => state.theme.theme);
+  const [messages, setMessages] = useState();
+  const [chatId, setChatId] = useState();
+  const dispatch = useDispatch();
   const [newMessage, setNewMessage] = useState(' ');
-  const {item} = route.params;
-  const colorSelect = theme === 'Dark' ? '#fff' : '#212121';
-  const phone = <Icon name="phone" size={25} color={colorSelect} />;
-  const dots = <Icon name="dots-vertical" size={25} color={colorSelect} />;
-  const goBack = (
-    <Icon.Button
-      name="keyboard-backspace"
-      size={30}
-      onPress={() => navigation.goBack()}
-      style={[styles.ıconButton, styles[`backButton${theme}`]]}
-      color={colorSelect}
-    />
-    // goBack() navigation property is added to goBack ıcon.
-  );
-  const smile = (
-    <Icon name="emoticon-excited-outline" size={25} color={colorSelect} />
-  );
-  const paperClip = <Icon name="paperclip" size={25} color={colorSelect} />;
-  // setIndexOfContact(ContactList.indexOf(item));
+  const {id} = route.params;
+  console.log('receiverıd', id);
+  console.log('current', auth.currentUser.uid);
 
-  const getMessages = () => {
-    const q = query(collection(db, 'chatRooms'), where('members', '=='));
+  const getMessages = async () => {
+    const chat =
+      auth.currentUser.uid > id
+        ? auth.currentUser.uid + id
+        : id + auth.currentUser.uid;
+    await getDoc(doc(db, 'chatRooms', chat)).then(res => {
+      const response = res.data();
+      console.log('res', response);
+      const messagesList = response.messages;
+      const chatInfo = response.chat;
+      console.log('chatId', chatInfo);
+      setChatId(chatInfo);
+      console.log(chatId);
+      console.log('mlist', messagesList);
+      setMessages(messagesList);
+    });
   };
+
+  const sendMessage = async () => {
+    await updateDoc(doc(db, 'chatRooms', chatId), {
+      messages: arrayUnion({
+        type: 'text',
+        message: newMessage,
+        senderId: auth.currentUser.uid,
+        date: Timestamp.now(),
+      }),
+    });
+    setNewMessage(null);
+  };
+
+  useEffect(() => {
+    getMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newMessage]);
 
   return (
     <SafeAreaView style={styles.enabledDirection}>
@@ -53,21 +73,21 @@ const ChatPage = ({navigation, route}) => {
           // Imagebackground view is choosed for messaging area.
           resizeMode="cover"
           style={styles.image}>
-          {/* <FlatList
-            data={item}
-            renderItem={({item}) => <MessageUnit message={item.text} />}
-          /> */}
-          <View style={[styles.bottomBar, styles[`bottomBar${theme}`]]}>
-            <View>{smile}</View>
-            <TextInput
-              style={styles.textInput}
-              label="Mesaj"
-              placeholder="Mesaj"
-              onChangeText={setNewMessage}
-            />
-            <View>{paperClip}</View>
-            {/* <View>{send}</View> */}
-          </View>
+          <FlatList
+            data={messages}
+            renderItem={({item}) => (
+              <MessageUnit
+                message={item.message}
+                sender={item.senderId}
+                messageType={item.type}
+              />
+            )}
+          />
+          <ChatPageFooter
+            messageText={newMessage}
+            textInputTask={setNewMessage}
+            sendIconTask={sendMessage}
+          />
         </ImageBackground>
       </View>
     </SafeAreaView>

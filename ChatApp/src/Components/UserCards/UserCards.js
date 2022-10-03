@@ -16,6 +16,11 @@ const UserCards = props => {
             <Text style={[styles.textInfo, styles[`text${theme}`]]}>
               {props.name} {props.surname}
             </Text>
+            {props.lastMessage && (
+              <Text style={[styles.lastMessage, styles[`text${theme}`]]}>
+                {props.lastMessage}
+              </Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>

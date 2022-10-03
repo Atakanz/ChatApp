@@ -38,4 +38,9 @@ export default StyleSheet.create({
   textView: {
     justifyContent: 'center',
   },
+  lastMessage: {
+    position: 'relative',
+    right: 3,
+    marginTop: 5,
+  },
 });

@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   user: [],
+  allUsers: [],
 };
 
 export const userSlice = createSlice({
@@ -11,6 +12,9 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
+    },
+    setAllUsers: (state, action) => {
+      state.allUsers = action.payload;
     },
     logIn: (state, action) => {
       state.user = action.payload;
@@ -23,6 +27,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const {setUser, logIn, logOut} = userSlice.actions;
+export const {setUser, setAllUsers, logIn, logOut} = userSlice.actions;
 
 export default userSlice.reducer;

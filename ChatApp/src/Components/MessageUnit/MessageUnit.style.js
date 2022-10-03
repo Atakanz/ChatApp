@@ -1,21 +1,26 @@
 import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
   messageUnitView: {
-    backgroundColor: 'white',
     borderRadius: 10,
-    marginVertical: 4,
+    marginVertical: 5,
     width: 'auto',
     marginHorizontal: 5,
     alignSelf: 'flex-start',
-    paddingHorizontal: 5,
-    paddingVertical: 5,
+    padding: 6,
     flexDirection: 'row',
-    marginLeft: 'auto',
     marginRight: 10,
     // MessageUnit width is set to changeable with the width of text
   },
+  senderUnit: {
+    marginLeft: 'auto',
+    backgroundColor: '#00B853',
+  },
+  receiverUnit: {
+    marginRight: 'auto',
+    backgroundColor: '#00B0F0',
+  },
   textMessage: {
     fontSize: 19,
-    color: 'black',
+    color: '#212121',
   },
 });

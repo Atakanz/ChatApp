@@ -1,21 +1,21 @@
 import React from 'react';
-import {StyleSheet, Pressable, Image, View} from 'react-native';
+import {StyleSheet, Pressable} from 'react-native';
+import DefaultHeader from '../Components/DefaultHeader/DefaultHeader';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useSelector} from 'react-redux';
-import {StatusBar} from 'expo-status-bar';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import ContactsList from '../Pages/ContactsList';
 import MessagesList from '../Pages/MessagesList';
 import Status from '../Pages/StatusPage';
+import SettingStack from './settingsStack';
 
 const Tab = createBottomTabNavigator();
 
 export const BottomTab = ({navigation}) => {
   const theme = useSelector(state => state.theme.theme);
   const colorSelect = theme === 'Dark' ? '#fff' : '#212121';
-  const editProfile = (
+  const searchUser = (
     <Icon
-      name="pencil-outline"
+      name="account-search-outline"
       size={30}
       color={colorSelect}
       style={styles.rightIcon}
@@ -41,31 +41,19 @@ export const BottomTab = ({navigation}) => {
         headerStyle: {
           backgroundColor: theme === 'Dark' ? '#212121' : '#20b2aa',
         },
-        headerBackground: () => (
-          <View style={[styles.logoView, styles[`logoView${theme}`]]}>
-            <StatusBar style={theme === 'Dark' ? 'light' : 'dark'} />
-            <Image
-              style={styles.logo}
-              source={require('../Assets/brandName.png')}
-            />
-          </View>
-        ),
+        headerBackground: () => <DefaultHeader />,
       }}>
-      <Tab.Screen
-        name="Contacts"
-        component={ContactsList}
-        options={{
-          tabBarIcon: ({color, size}) => (
-            <Icon name="account-group" color={colorSelect} size={30} />
-          ),
-        }}
-      />
       <Tab.Screen
         name="Messages"
         component={MessagesList}
         options={{
           tabBarIcon: ({color, size}) => (
             <Icon name="comment-text-multiple" color={colorSelect} size={30} />
+          ),
+          headerRight: () => (
+            <Pressable onPress={() => navigation.navigate('Contacts')}>
+              {searchUser}
+            </Pressable>
           ),
         }}
       />
@@ -76,10 +64,14 @@ export const BottomTab = ({navigation}) => {
           tabBarIcon: ({color, size}) => (
             <Icon name="progress-upload" color={colorSelect} size={30} />
           ),
-          headerRight: () => (
-            <Pressable onPress={() => navigation.navigate('Settings')}>
-              {editProfile}
-            </Pressable>
+        }}
+      />
+      <Tab.Screen
+        name="Contacts"
+        component={SettingStack}
+        options={{
+          tabBarIcon: ({color, size}) => (
+            <Icon name="account" color={colorSelect} size={30} />
           ),
         }}
       />
@@ -88,23 +80,9 @@ export const BottomTab = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  logo: {
-    position: 'absolute',
-    bottom: 1,
-    width: 125,
-    height: 45,
-  },
-  logoView: {
-    height: '100%',
-    width: '100%',
-  },
-  logoViewDark: {
-    backgroundColor: '#212121',
-  },
-  logoViewLight: {
-    backgroundColor: '#fff',
-  },
   rightIcon: {
-    marginRight: 15,
+    marginRight: 20,
+    position: 'relative',
+    top: 7,
   },
 });

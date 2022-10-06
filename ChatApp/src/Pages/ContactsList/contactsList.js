@@ -10,31 +10,48 @@ import {
   getDocs,
   setDoc,
   updateDoc,
+  arrayUnion,
 } from 'firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
+
 import UserCards from '../../Components/UserCards';
 import {useSelector, useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 import {setAllChatRooms} from '../../Management/Features/chatSlice';
-import {setAllUsers} from '../../Management/Features/userSlice';
 
-const ContactsList = ({navigation}) => {
+const ContactsList = () => {
+  const [searched, setSearched] = useState([]);
+  const [foundUser, setFoundUser] = useState([]);
   const allChats = useSelector(state => state.chat.allChatRooms);
-  const allUsers = useSelector(state => state.auth.allUsers);
+  // const allUsers = useSelector(state => state.auth.allUsers);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: 'Search friends',
+        onChangeText: event => {
+          searchFilterFunction(event.nativeEvent.text);
+        },
+      },
+    });
+  });
+
+  const searchFilterFunction = text => {
+    if (text) {
+      setSearched(text);
+    }
+  };
 
   const dispatch = useDispatch();
-  const isFocused = useIsFocused();
+
   const getUsers = async () => {
-    const q = query(
-      collection(db, 'users'),
-      where('id', '!=', auth.currentUser.uid),
-    );
+    const q = query(collection(db, 'users'), where('username', '==', searched));
     await getDocs(q).then(res => {
-      const _users = res.docs.map(item => item.data());
-      console.log('user', _users);
-      dispatch(setAllUsers(_users));
-      console.log('allusers', allUsers);
+      const _user = res.docs.map(item => item.data());
+      setFoundUser(_user);
     });
   };
+
   const getChatRooms = async () => {
     const q = query(collection(db, 'chatRooms'));
     await getDocs(q).then(res => {
@@ -56,28 +73,34 @@ const ContactsList = ({navigation}) => {
       setDoc(doc(db, 'chatRooms', chatId), {
         messages: [],
         chat: chatId,
+        members: [receiverId, auth.currentUser.uid],
+      });
+      updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        friends: arrayUnion({
+          friendId: receiverId,
+        }),
+      });
+      updateDoc(doc(db, 'users', receiverId), {
+        friends: arrayUnion({
+          friendId: auth.currentUser.uid,
+        }),
       });
     }
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getUsers();
-      getChatRooms();
-      console.log('dispatch', allChats);
-    });
-    return unsubscribe;
+    getUsers();
+    getChatRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigation]);
+  }, [searched]);
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={allUsers}
+        data={foundUser}
         renderItem={({item}) => (
           <UserCards
-            name={item.name}
-            surname={item.surname}
+            name={item.username}
             link={item.photoUrl}
             task={() => {
               navigation.navigate('ChatPage', {

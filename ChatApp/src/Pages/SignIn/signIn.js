@@ -3,7 +3,7 @@ import {SafeAreaView} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import LoginForm from '../../Components/LoginForm';
 import styles from './signIn.styles';
-import {logIn} from '../../Management/Features/userSlice';
+import {setUser} from '../../Management/Features/userSlice';
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import {doc, getDoc} from 'firebase/firestore';
 import {auth, db} from '../../../config';
@@ -19,7 +19,7 @@ const SignIn = ({navigation}) => {
         const userDoc = doc(db, 'users', response.user.uid);
         const userRef = await getDoc(userDoc);
         if (userRef.exists()) {
-          dispatch(logIn({mail: userEmail, password: userPassword}));
+          dispatch(setUser(userRef.data()));
         }
       })
       .catch(err => {

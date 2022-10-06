@@ -10,8 +10,15 @@ const TopBar = ({src, name, icon2, icon3}) => {
       style={[styles.enabledDirection, styles[`enabledDirection${theme}`]]}>
       <View style={styles.directionRow}>
         <View style={styles.textImage}>
-          {src && <Image source={{uri: src}} style={styles.img} />}
-          {/* if src prop is not passed, not show the place of image as space. */}
+          {src ? (
+            <Image source={{uri: src}} style={styles.img} />
+          ) : (
+            <Image
+              source={require('../../Assets/noProfilePhoto.jpg')}
+              style={styles.img}
+            />
+          )}
+
           <Text style={[styles.text, styles[`text${theme}`]]}>{name}</Text>
         </View>
         <View style={styles.rightIcon}>

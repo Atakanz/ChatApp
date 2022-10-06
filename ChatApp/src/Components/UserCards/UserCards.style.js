@@ -43,4 +43,13 @@ export default StyleSheet.create({
     right: 3,
     marginTop: 5,
   },
+  hourInfo: {
+    marginLeft: 'auto',
+    justifyContent: 'center',
+    marginRight: 7,
+  },
+  lastMessageType: {
+    fontStyle: 'italic',
+    marginTop: 3,
+  },
 });

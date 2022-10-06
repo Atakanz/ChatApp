@@ -21,7 +21,7 @@ const ChatPageFooter = props => {
       name="paperclip"
       size={25}
       color={colorSelect}
-      onPress={props?.paperClipTask}
+      onPress={props.attachIconTask}
       style={[styles.ıconButton, styles[`ıconButton${theme}`]]}
     />
   );

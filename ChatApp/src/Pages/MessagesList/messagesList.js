@@ -2,68 +2,71 @@ import React, {useState, useEffect} from 'react';
 import {SafeAreaView, FlatList} from 'react-native';
 import UserCards from '../../Components/UserCards';
 import styles from './messagesList.style';
-import {useSelector, useDispatch} from 'react-redux';
 import {db, auth} from '../../../config';
 import {
+  orderBy,
   doc,
+  getDoc,
   collection,
   query,
   where,
   getDocs,
-  setDoc,
-  updateDoc,
 } from 'firebase/firestore';
-import {setAllChatRooms} from '../../Management/Features/chatSlice';
+
+import {useIsFocused} from '@react-navigation/native';
 
 const MessagesList = ({navigation}) => {
-  // const allUsers = useSelector(state => state.auth.allUsers);
-  // const allChats = useSelector(state => state.chat.allChatRooms);
-  const dispatch = useDispatch();
   const [messagesList, setMessagesList] = useState();
-  const allUsers = useSelector(state => state.auth.allUsers);
+  const isFocused = useIsFocused();
+
   const getChatRooms = async () => {
-    const q = query(collection(db, 'chatRooms'));
-    await getDocs(q).then(res => {
-      const chatRooms = res.docs.map(item => item.data());
-      console.log('cRoomss', chatRooms);
-      const chatWithMessage = chatRooms.filter(
-        item =>
-          item.messages.length > 0 &&
-          item.chat.indexOf(auth.currentUser.uid) !== -1,
+    if (auth.currentUser) {
+      let uid = auth.currentUser.uid;
+      const q = query(
+        collection(db, 'chatRooms'),
+        where('members', 'array-contains', uid),
+        orderBy('lastRefresh', 'desc'),
       );
-      const activeChats = chatWithMessage.map(function (item) {
+      const chatRooms = await getDocs(q);
+      console.log('cRooms', chatRooms);
+      const allChatRooms = chatRooms.docs.map(item => item.data());
+      const chatWithMessage = allChatRooms.filter(
+        item => item.messages.length > 0,
+      );
+      console.log('active', chatWithMessage);
+      const actives = [];
+      chatWithMessage.forEach(async function (item) {
         const receiverId =
-          item.chat.slice(0, 28) === auth.currentUser.uid
+          item.chat.slice(0, 28) === uid
             ? item.chat.slice(28)
             : item.chat.slice(0, 28);
-        console.log('id', receiverId);
-        const userInfo = allUsers.find(function (elem) {
-          return elem.id === receiverId;
-        });
-        const name = userInfo.name;
-        const photoUrl = userInfo.photoUrl;
-        const surname = userInfo.surname;
-        return {
-          chat: name,
-          surname: surname,
+        const userDocSnap = await getDoc(doc(db, 'users', receiverId));
+        console.log('iduser', userDocSnap.data());
+        const rooms = {
+          chat: userDocSnap.data().name,
+          surname: userDocSnap.data().surname,
           id: receiverId,
-          photoUrl: photoUrl,
+          photoUrl: userDocSnap.data().photoUrl,
           lastMessage: item.messages[item.messages.length - 1].message,
+          lastMessageType: item.messages[item.messages.length - 1].type,
+          date: item.messages[item.messages.length - 1].date,
         };
+        actives.push(rooms);
+        console.log('pushed', actives);
+        if (actives.length === chatWithMessage.length) {
+          setMessagesList(actives);
+          console.log('messages', messagesList);
+        }
       });
-      console.log('message', activeChats);
-      setMessagesList(activeChats);
-      // dispatch(setAllChatRooms(chatRooms));
-    });
+    }
   };
+  console.log('after', messagesList);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getChatRooms();
-    });
-    return unsubscribe;
+    getChatRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigation]);
+  }, [isFocused]);
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -71,9 +74,10 @@ const MessagesList = ({navigation}) => {
         renderItem={({item}) => (
           <UserCards
             name={item.chat}
-            surname={item.surname}
             link={item.photoUrl}
             lastMessage={item.lastMessage}
+            lastMessageType={item.lastMessageType}
+            time={item.date}
             task={() => {
               navigation.navigate('ChatPage', {
                 name: item.chat,

@@ -20,7 +20,24 @@ export default StyleSheet.create({
     backgroundColor: '#00B0F0',
   },
   textMessage: {
-    fontSize: 19,
+    fontSize: 15,
     color: '#212121',
+    maxWidth: 200,
+  },
+  date: {
+    fontSize: 10,
+    color: '#212121',
+    position: 'relative',
+    marginTop: 'auto',
+    marginLeft: 5,
+    fontWeight: 'bold',
+  },
+  imageMessage: {
+    width: 200,
+    height: 200,
+  },
+  map: {
+    width: 200,
+    height: 200,
   },
 });

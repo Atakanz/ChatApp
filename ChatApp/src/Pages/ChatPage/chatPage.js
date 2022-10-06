@@ -1,9 +1,23 @@
-import React, {useState, useEffect} from 'react';
-import {SafeAreaView, FlatList, View, ImageBackground} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {
+  SafeAreaView,
+  FlatList,
+  View,
+  ImageBackground,
+  Modal,
+  Alert,
+  Image,
+} from 'react-native';
 import {db, auth} from '../../../config';
 import MessageUnit from '../../Components/MessageUnit/MessageUnit';
 import styles from './chatPage.style';
 import {useDispatch, useSelector} from 'react-redux';
+import Attachment from '../../Components/Attachment/Attachment';
+import usePickImage from '../../Hooks/pickImageFromGallery';
+import useUploadImage from '../../Hooks/xmlhttpRequest';
+import useTakePhoto from '../../Hooks/takePhoto';
+import Buttons from '../../Components/Buttons';
+import * as Location from 'expo-location';
 import ChatPageFooter from '../../Components/ChatPageFooter/ChatPageFooter';
 import {
   collection,
@@ -11,37 +25,55 @@ import {
   where,
   getDoc,
   doc,
+  limit,
   updateDoc,
   arrayUnion,
   Timestamp,
+  onSnapshot,
 } from 'firebase/firestore';
 
 const ChatPage = ({navigation, route}) => {
   const theme = useSelector(state => state.theme.theme);
   const [messages, setMessages] = useState();
+  const [location, setLocation] = useState();
   const [chatId, setChatId] = useState();
   const dispatch = useDispatch();
   const [newMessage, setNewMessage] = useState(' ');
   const {id} = route.params;
-  console.log('receiverıd', id);
-  console.log('current', auth.currentUser.uid);
+
+  const [attachModalVisible, setAttachModalVisible] = useState(false);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
+  const [filePath, setFilePath] = useState('');
+  const {pickImage} = usePickImage();
+  const {uploadImage} = useUploadImage();
+  const {takePhoto} = useTakePhoto();
+
+  const yourRef = useRef(null);
+
+  const selectGallery = () => {
+    pickImage().then(res => {
+      if (res !== undefined) {
+        setFilePath(res);
+        setImageModalVisible(true);
+      }
+      setAttachModalVisible(false);
+    });
+  };
 
   const getMessages = async () => {
     const chat =
       auth.currentUser.uid > id
         ? auth.currentUser.uid + id
         : id + auth.currentUser.uid;
-    await getDoc(doc(db, 'chatRooms', chat)).then(res => {
-      const response = res.data();
-      console.log('res', response);
-      const messagesList = response.messages;
-      const chatInfo = response.chat;
-      console.log('chatId', chatInfo);
-      setChatId(chatInfo);
-      console.log(chatId);
-      console.log('mlist', messagesList);
-      setMessages(messagesList);
+    // eslint-disable-next-line
+    const unSub = onSnapshot(doc(db, 'chatRooms', chat), (doc) => {
+      doc.exists() && console.log(doc.data());
+      setMessages(doc.data().messages.reverse());
+      setChatId(doc.data().chat);
     });
+    return () => {
+      unSub();
+    };
   };
 
   const sendMessage = async () => {
@@ -50,20 +82,119 @@ const ChatPage = ({navigation, route}) => {
         type: 'text',
         message: newMessage,
         senderId: auth.currentUser.uid,
-        date: Timestamp.now(),
+        date: Timestamp.now().toDate().toString(),
       }),
+      lastRefresh: Timestamp.now(),
     });
     setNewMessage(null);
   };
 
+  const goCamera = () => {
+    takePhoto().then(res => {
+      if (res !== undefined) {
+        setFilePath(res);
+        setImageModalVisible(true);
+      }
+      setAttachModalVisible(false);
+    });
+  };
+
+  const sendLocation = async () => {
+    await updateDoc(doc(db, 'chatRooms', chatId), {
+      messages: arrayUnion({
+        type: 'location',
+        message: location,
+        senderId: auth.currentUser.uid,
+        date: Timestamp.now().toDate().toString(),
+      }),
+      lastRefresh: Timestamp.now(),
+    });
+    setAttachModalVisible(false);
+  };
+
+  const ımageSubmit = async () => {
+    uploadImage({uri: filePath}).then(async res => {
+      await updateDoc(doc(db, 'chatRooms', chatId), {
+        messages: arrayUnion({
+          type: 'image',
+          message: res,
+          senderId: auth.currentUser.uid,
+          date: Timestamp.now().toDate().toString(),
+        }),
+        lastRefresh: Timestamp.now(),
+      });
+    });
+  };
+
+  const getCurrentLocation = async () => {
+    const {status} = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission to access location was denied');
+      return;
+    }
+    const currentLocation = await Location.getCurrentPositionAsync({});
+    setLocation({
+      longitude: currentLocation.coords.longitude,
+      latitude: currentLocation.coords.latitude,
+    });
+  };
+
   useEffect(() => {
     getMessages();
+    getCurrentLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newMessage]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.enabledDirection}>
       <View style={styles.container}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={attachModalVisible}
+          onRequestClose={() => {
+            setAttachModalVisible(!attachModalVisible);
+          }}>
+          <View style={styles.attachCenteredView}>
+            <View style={styles.attachModalView}>
+              <Attachment
+                galleryTask={selectGallery}
+                mapTask={sendLocation}
+                cameraTask={goCamera}
+              />
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={imageModalVisible}
+          onRequestClose={() => {
+            setImageModalVisible(!imageModalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              {filePath && (
+                <Image style={styles.image} source={{uri: filePath}} />
+              )}
+              <Buttons
+                task={() => {
+                  ımageSubmit();
+                  setImageModalVisible(false);
+                  setFilePath(null);
+                }}
+                name="Send"
+              />
+              <Buttons
+                task={() => {
+                  setImageModalVisible(false);
+                  setFilePath(null);
+                }}
+                name="Discard"
+              />
+            </View>
+          </View>
+        </Modal>
         <ImageBackground
           source={
             theme === 'Light'
@@ -72,14 +203,18 @@ const ChatPage = ({navigation, route}) => {
           }
           // Imagebackground view is choosed for messaging area.
           resizeMode="cover"
-          style={styles.image}>
+          style={styles.backGroundImage}>
           <FlatList
+            inverted
+            // ref={yourRef}
+            // onContentSizeChange={() => yourRef.current.scrollToEnd()}
             data={messages}
             renderItem={({item}) => (
               <MessageUnit
                 message={item.message}
                 sender={item.senderId}
                 messageType={item.type}
+                time={item.date}
               />
             )}
           />
@@ -87,6 +222,9 @@ const ChatPage = ({navigation, route}) => {
             messageText={newMessage}
             textInputTask={setNewMessage}
             sendIconTask={sendMessage}
+            attachIconTask={() => {
+              setAttachModalVisible(!attachModalVisible);
+            }}
           />
         </ImageBackground>
       </View>

@@ -36,9 +36,14 @@ const MessageUnit = props => {
         </View>
       )}
       {image && (
-        <View>
-          <Image source={{uri: props.message}} style={styles.imageMessage} />
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Image', {photo: props.message});
+          }}>
+          <View>
+            <Image source={{uri: props.message}} style={styles.imageMessage} />
+          </View>
+        </TouchableOpacity>
       )}
       {location && (
         <TouchableOpacity

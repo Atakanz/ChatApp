@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   FlatList,
@@ -11,7 +11,7 @@ import {
 import {db, auth} from '../../../config';
 import MessageUnit from '../../Components/MessageUnit/MessageUnit';
 import styles from './chatPage.style';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import Attachment from '../../Components/Attachment/Attachment';
 import usePickImage from '../../Hooks/pickImageFromGallery';
 import useUploadImage from '../../Hooks/xmlhttpRequest';
@@ -20,12 +20,7 @@ import Buttons from '../../Components/Buttons';
 import * as Location from 'expo-location';
 import ChatPageFooter from '../../Components/ChatPageFooter/ChatPageFooter';
 import {
-  collection,
-  query,
-  where,
-  getDoc,
   doc,
-  limit,
   updateDoc,
   arrayUnion,
   Timestamp,
@@ -35,9 +30,7 @@ import {
 const ChatPage = ({navigation, route}) => {
   const theme = useSelector(state => state.theme.theme);
   const [messages, setMessages] = useState();
-  const [location, setLocation] = useState();
   const [chatId, setChatId] = useState();
-  const dispatch = useDispatch();
   const [newMessage, setNewMessage] = useState(' ');
   const {id} = route.params;
 
@@ -47,8 +40,6 @@ const ChatPage = ({navigation, route}) => {
   const {pickImage} = usePickImage();
   const {uploadImage} = useUploadImage();
   const {takePhoto} = useTakePhoto();
-
-  const yourRef = useRef(null);
 
   const selectGallery = () => {
     pickImage().then(res => {
@@ -99,19 +90,6 @@ const ChatPage = ({navigation, route}) => {
     });
   };
 
-  const sendLocation = async () => {
-    await updateDoc(doc(db, 'chatRooms', chatId), {
-      messages: arrayUnion({
-        type: 'location',
-        message: location,
-        senderId: auth.currentUser.uid,
-        date: Timestamp.now().toDate().toString(),
-      }),
-      lastRefresh: Timestamp.now(),
-    });
-    setAttachModalVisible(false);
-  };
-
   const ımageSubmit = async () => {
     uploadImage({uri: filePath}).then(async res => {
       await updateDoc(doc(db, 'chatRooms', chatId), {
@@ -126,22 +104,32 @@ const ChatPage = ({navigation, route}) => {
     });
   };
 
-  const getCurrentLocation = async () => {
+  const sendLocation = async () => {
     const {status} = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission to access location was denied');
       return;
     }
-    const currentLocation = await Location.getCurrentPositionAsync({});
-    setLocation({
-      longitude: currentLocation.coords.longitude,
-      latitude: currentLocation.coords.latitude,
+    const res = await Location.getCurrentPositionAsync({});
+    const location = {
+      longitude: res.coords.longitude,
+      latitude: res.coords.latitude,
+    };
+    console.log('location', location);
+    await updateDoc(doc(db, 'chatRooms', chatId), {
+      messages: arrayUnion({
+        type: 'location',
+        message: location,
+        senderId: auth.currentUser.uid,
+        date: Timestamp.now().toDate().toString(),
+      }),
+      lastRefresh: Timestamp.now(),
     });
+    setAttachModalVisible(false);
   };
 
   useEffect(() => {
     getMessages();
-    getCurrentLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -206,8 +194,6 @@ const ChatPage = ({navigation, route}) => {
           style={styles.backGroundImage}>
           <FlatList
             inverted
-            // ref={yourRef}
-            // onContentSizeChange={() => yourRef.current.scrollToEnd()}
             data={messages}
             renderItem={({item}) => (
               <MessageUnit

@@ -37,23 +37,23 @@ The sign-in screen prompted users to enter their email addresses and passwords. 
 
 After logging in, the web application moves to the bottom tab of the other conditional stack form. Friends' IDs are pulled from the redux and examined on the messages page to see whether any messages are present in the chat rooms associated with these IDs. The currently active chat rooms are located and then shown as flatlist items. On the default header bar of the message pages chat, there is an icon that links to the user search page. Here, only those users that were searched with fully usernames are displayed to the user. Friend request will be added in the next versions of the project.
 
-<img src="./AppAssets/MessagesList.jpeg" alt="drawing" width="150"/>
+<img src="./AppAssets/MessagesList.jpeg" alt="drawing" width="200"/>
 
 
 
 
 On the chat pages, messages are shown with the onSnapShow way of fetching data so that last messages are shown in the page at once.
 
-<img src="./AppAssets/ChatPage.jpeg" alt="drawing" width="150"/>
-<img src="./AppAssets/SendImage.jpeg" alt="drawing" width="150"/>
-<img src="./AppAssets/ChatPageImage.jpeg" alt="drawing" width="150"/>
+<img src="./AppAssets/ChatPage.jpeg" alt="drawing" width="200"/>
+<img src="./AppAssets/SendImage.jpeg" alt="drawing" width="200"/>
+<img src="./AppAssets/ChatPageImage.jpeg" alt="drawing" width="200"/>
 
 On the status pages, the friends which shared status in last 24 hours are listed. By tapping on the user cards, shared statuses can be seen as gallery. Also, users can share their first stasuses by tapping their user cards or add a new one by tapping header right plus icon.
 
-<img src="./AppAssets/StatusList.jpeg" alt="drawing" width="150"/>
-<img src="./AppAssets/StatusUnit.jpeg" alt="drawing" width="150"/>
+<img src="./AppAssets/StatusList.jpeg" alt="drawing" width="200"/>
+<img src="./AppAssets/StatusUnit.jpeg" alt="drawing" width="200"/>
 
 On profile page, the current information, profile photo and friends list can be seen. The friends list is another way for users to access the chat sites. Users can access the page where they can modify their usernames, passwords, and emails by touching the icon in the top right corner of the header. In the edit profile page, users can also select a light or dark theme here by pressing the theme icon.
 
-<img src="./AppAssets/Profile.jpeg" alt="drawing" width="150"/>
+<img src="./AppAssets/Profile.jpeg" alt="drawing" width="200"/>
 

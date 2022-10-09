@@ -15,7 +15,7 @@ export default StyleSheet.create({
     borderWidth: 1.4,
   },
   buttonDark: {
-    backgroundColor: '#1A5BAA',
+    backgroundColor: '#00B0F0',
   },
   text: {
     fontSize: 16,

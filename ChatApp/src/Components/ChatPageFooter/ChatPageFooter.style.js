@@ -13,7 +13,7 @@ export default StyleSheet.create({
     height: 50,
   },
   bottomBarDark: {
-    backgroundColor: '#212121',
+    backgroundColor: 'black',
   },
   bottomBarLight: {
     backgroundColor: '#fff',

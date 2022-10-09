@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
   logo: {
     position: 'absolute',
-    bottom: 1,
+    bottom: 6,
     width: 125,
     height: 45,
   },

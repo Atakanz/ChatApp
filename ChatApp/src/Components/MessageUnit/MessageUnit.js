@@ -1,10 +1,12 @@
 import React from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, TouchableOpacity} from 'react-native';
 import styles from './MessageUnit.style';
 import {auth} from '../../../config';
 import {useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 import MapView, {Marker} from 'react-native-maps';
 const MessageUnit = props => {
+  const navigation = useNavigation();
   let text = null;
   let image = null;
   let location = null;
@@ -39,25 +41,34 @@ const MessageUnit = props => {
         </View>
       )}
       {location && (
-        <MapView
-          region={{
-            latitude: props.message.latitude,
-            longitude: props.message.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          style={styles.map}
-          maxZoomLevel={15}>
-          <Marker
-            coordinate={{
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Map', {
               latitude: props.message.latitude,
               longitude: props.message.longitude,
+              sender: props.sender,
+            });
+          }}>
+          <MapView
+            region={{
+              latitude: props.message.latitude,
+              longitude: props.message.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
             }}
-            pinColor={
-              props.sender === auth.currentUser.uid ? '#00B050' : '#1A5BAA'
-            }
-          />
-        </MapView>
+            style={styles.map}
+            maxZoomLevel={15}>
+            <Marker
+              coordinate={{
+                latitude: props.message.latitude,
+                longitude: props.message.longitude,
+              }}
+              pinColor={
+                props.sender === auth.currentUser.uid ? '#00B050' : '#1A5BAA'
+              }
+            />
+          </MapView>
+        </TouchableOpacity>
       )}
       <View>
         <Text style={styles.date}>{hourInfo}</Text>

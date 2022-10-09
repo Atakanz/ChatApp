@@ -92,7 +92,7 @@ const ContactsList = () => {
             task={() => {
               navigation.navigate('ChatPage', {
                 name: item.name,
-                link: item.photoUrl,
+                photoUrl: item.photoUrl,
                 id: item.id,
               });
               setChatRoom(item.id);

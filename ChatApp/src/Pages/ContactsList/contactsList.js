@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView, FlatList} from 'react-native';
-import styles from './contacts.style';
+import styles from './contactsList.style';
 import {db, auth} from '../../../config';
 import {
   doc,
@@ -14,15 +14,14 @@ import {
 } from 'firebase/firestore';
 
 import UserCards from '../../Components/UserCards';
-import {useSelector, useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import {setAllChatRooms} from '../../Management/Features/chatSlice';
 
 const ContactsList = () => {
+  const theme = useSelector(state => state.theme.theme);
   const [searched, setSearched] = useState([]);
   const [foundUser, setFoundUser] = useState([]);
   const allChats = useSelector(state => state.chat.allChatRooms);
-  // const allUsers = useSelector(state => state.auth.allUsers);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -42,22 +41,11 @@ const ContactsList = () => {
     }
   };
 
-  const dispatch = useDispatch();
-
   const getUsers = async () => {
     const q = query(collection(db, 'users'), where('username', '==', searched));
     await getDocs(q).then(res => {
       const _user = res.docs.map(item => item.data());
       setFoundUser(_user);
-    });
-  };
-
-  const getChatRooms = async () => {
-    const q = query(collection(db, 'chatRooms'));
-    await getDocs(q).then(res => {
-      const chatRooms = res.docs.map(item => item.data());
-      console.log('cRooms', chatRooms);
-      dispatch(setAllChatRooms(chatRooms));
     });
   };
 
@@ -90,18 +78,17 @@ const ContactsList = () => {
 
   useEffect(() => {
     getUsers();
-    getChatRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searched]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>
       <FlatList
         data={foundUser}
         renderItem={({item}) => (
           <UserCards
             name={item.username}
-            link={item.photoUrl}
+            photoUrl={item.photoUrl}
             task={() => {
               navigation.navigate('ChatPage', {
                 name: item.name,

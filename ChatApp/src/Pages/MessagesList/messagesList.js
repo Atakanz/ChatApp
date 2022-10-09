@@ -12,76 +12,85 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
-
 import {useIsFocused} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import {onAuthStateChanged} from 'firebase/auth';
 
 const MessagesList = ({navigation}) => {
+  const theme = useSelector(state => state.theme.theme);
   const [messagesList, setMessagesList] = useState();
+  const [userId, setUserId] = useState();
   const isFocused = useIsFocused();
-
+  const user = useSelector(state => state.auth.user);
   const getChatRooms = async () => {
-    if (auth.currentUser) {
-      let uid = auth.currentUser.uid;
-      const q = query(
-        collection(db, 'chatRooms'),
-        where('members', 'array-contains', uid),
-        orderBy('lastRefresh', 'desc'),
-      );
-      const chatRooms = await getDocs(q);
-      console.log('cRooms', chatRooms);
-      const allChatRooms = chatRooms.docs.map(item => item.data());
-      const chatWithMessage = allChatRooms.filter(
-        item => item.messages.length > 0,
-      );
-      console.log('active', chatWithMessage);
-      const actives = [];
-      chatWithMessage.forEach(async function (item) {
-        const receiverId =
-          item.chat.slice(0, 28) === uid
-            ? item.chat.slice(28)
-            : item.chat.slice(0, 28);
-        const userDocSnap = await getDoc(doc(db, 'users', receiverId));
-        console.log('iduser', userDocSnap.data());
-        const rooms = {
-          chat: userDocSnap.data().name,
-          surname: userDocSnap.data().surname,
-          id: receiverId,
-          photoUrl: userDocSnap.data().photoUrl,
-          lastMessage: item.messages[item.messages.length - 1].message,
-          lastMessageType: item.messages[item.messages.length - 1].type,
-          date: item.messages[item.messages.length - 1].date,
-        };
-        actives.push(rooms);
-        console.log('pushed', actives);
-        if (actives.length === chatWithMessage.length) {
-          setMessagesList(actives);
-          console.log('messages', messagesList);
-        }
-      });
-    }
+    let uid = user.id;
+    const q = query(
+      collection(db, 'chatRooms'),
+      where('members', 'array-contains', uid),
+      orderBy('lastRefresh', 'desc'),
+    );
+    const chatRooms = await getDocs(q);
+    const allChatRooms = chatRooms.docs.map(item => item.data());
+    const chatWithMessage = allChatRooms.filter(
+      item => item.messages.length > 0,
+    );
+    const actives = [];
+    chatWithMessage.forEach(async function (item) {
+      const receiverId =
+        item.chat.slice(0, 28) === uid
+          ? item.chat.slice(28)
+          : item.chat.slice(0, 28);
+      const userDocSnap = await getDoc(doc(db, 'users', receiverId));
+      const rooms = {
+        chat: userDocSnap.data().name,
+        surname: userDocSnap.data().surname,
+        id: receiverId,
+        photoUrl: userDocSnap.data().photoUrl,
+        lastMessage: item.messages[item.messages.length - 1].message,
+        lastMessageType: item.messages[item.messages.length - 1].type,
+        date: item.messages[item.messages.length - 1].date,
+      };
+      actives.push(rooms);
+      if (actives.length === chatWithMessage.length) {
+        setMessagesList(actives);
+      }
+    });
   };
-  console.log('after', messagesList);
+
+  useEffect(() => {
+    // eslint-disable-next-line
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     getChatRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused]);
+  }, [userId, isFocused]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>
       <FlatList
         data={messagesList}
         renderItem={({item}) => (
           <UserCards
             name={item.chat}
-            link={item.photoUrl}
+            photoUrl={item.photoUrl}
             lastMessage={item.lastMessage}
             lastMessageType={item.lastMessageType}
             time={item.date}
             task={() => {
               navigation.navigate('ChatPage', {
                 name: item.chat,
-                link: item.photoUrl,
+                photoUrl: item.photoUrl,
                 id: item.id,
               });
             }}

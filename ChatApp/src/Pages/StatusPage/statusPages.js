@@ -1,13 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Modal,
-  Image,
-  FlatList,
-  Pressable,
-} from 'react-native';
-import Buttons from '../../Components/Buttons';
+import {SafeAreaView, View, FlatList, Pressable} from 'react-native';
+import ImagePreviewModal from '../../Components/ImagePreviewModal/ImagePreviewModal';
 import SectionHeader from '../../Components/SectionHeader/SectionHeader';
 import styles from './statusPages.style';
 import usePickImage from '../../Hooks/pickImageFromGallery';
@@ -164,36 +157,21 @@ const StatusPages = () => {
   const statusType2 = "Friend's statuses";
   return (
     <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={imageModalVisible}
-        onRequestClose={() => {
-          setImageModalVisible(!imageModalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            {filePath && (
-              <Image style={styles.image} source={{uri: filePath}} />
-            )}
-            <Buttons
-              task={() => {
-                ımageSubmit();
-                setImageModalVisible(false);
-                setFilePath(null);
-              }}
-              name="Share"
-            />
-            <Buttons
-              task={() => {
-                setImageModalVisible(false);
-                setFilePath(null);
-              }}
-              name="Discard"
-            />
-          </View>
-        </View>
-      </Modal>
+      {imageModalVisible && (
+        <ImagePreviewModal
+          state={imageModalVisible}
+          setFalseVisibility={() => {
+            setImageModalVisible(false);
+          }}
+          file={filePath}
+          sendFunction={() => {
+            ımageSubmit();
+          }}
+          setNullFile={() => {
+            setFilePath(null);
+          }}
+        />
+      )}
 
       <SectionHeader header={statusType1} />
 

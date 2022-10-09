@@ -4,7 +4,6 @@ import {
   View,
   Image,
   Text,
-  Modal,
   Pressable,
   FlatList,
 } from 'react-native';
@@ -14,7 +13,7 @@ import {doc, updateDoc, getDoc} from 'firebase/firestore';
 import usePickImage from '../../Hooks/pickImageFromGallery';
 import useUploadImage from '../../Hooks/xmlhttpRequest';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import Buttons from '../../Components/Buttons';
+import ImagePreviewModal from '../../Components/ImagePreviewModal/ImagePreviewModal';
 import UserCards from '../../Components/UserCards';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {logOut} from '../../Management/Features/userSlice';
@@ -107,7 +106,6 @@ const Profile = () => {
     // eslint-disable-next-line
   }, [user, isFocused, userId]);
 
-
   const dispatch = useDispatch();
   const handleSubmit = async () => {
     uploadImage({uri: filePath}).then(res => {
@@ -124,36 +122,22 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            {filePath && (
-              <Image style={styles.image} source={{uri: filePath}} />
-            )}
-            <Buttons
-              task={() => {
-                handleSubmit();
-                setModalVisible(false);
-                setFilePath(null);
-              }}
-              name="Save"
-            />
-            <Buttons
-              task={() => {
-                setModalVisible(false);
-                setFilePath(null);
-              }}
-              name="Discard"
-            />
-          </View>
-        </View>
-      </Modal>
+      {modalVisible && (
+        <ImagePreviewModal
+          state={modalVisible}
+          setFalseVisibility={() => {
+            setModalVisible(false);
+          }}
+          file={filePath}
+          sendFunction={() => {
+            handleSubmit();
+          }}
+          setNullFile={() => {
+            setFilePath(null);
+          }}
+        />
+      )}
+
       <View style={styles.rowDirection}>
         <View>
           <View>

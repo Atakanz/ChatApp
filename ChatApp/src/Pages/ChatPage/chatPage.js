@@ -4,9 +4,7 @@ import {
   FlatList,
   View,
   ImageBackground,
-  Modal,
   Alert,
-  Image,
 } from 'react-native';
 import {db, auth} from '../../../config';
 import MessageUnit from '../../Components/MessageUnit/MessageUnit';
@@ -16,8 +14,8 @@ import Attachment from '../../Components/Attachment/Attachment';
 import usePickImage from '../../Hooks/pickImageFromGallery';
 import useUploadImage from '../../Hooks/xmlhttpRequest';
 import useTakePhoto from '../../Hooks/takePhoto';
-import Buttons from '../../Components/Buttons';
 import * as Location from 'expo-location';
+import ImagePreviewModal from '../../Components/ImagePreviewModal/ImagePreviewModal';
 import ChatPageFooter from '../../Components/ChatPageFooter/ChatPageFooter';
 import {
   doc,
@@ -136,60 +134,38 @@ const ChatPage = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.enabledDirection}>
       <View style={styles.container}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={attachModalVisible}
-          onRequestClose={() => {
+        <Attachment
+          state={attachModalVisible}
+          setVisibleFalse={() => {
             setAttachModalVisible(!attachModalVisible);
-          }}>
-          <View style={styles.attachCenteredView}>
-            <View style={styles.attachModalView}>
-              <Attachment
-                galleryTask={selectGallery}
-                mapTask={sendLocation}
-                cameraTask={goCamera}
-              />
-            </View>
-          </View>
-        </Modal>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={imageModalVisible}
-          onRequestClose={() => {
-            setImageModalVisible(!imageModalVisible);
-          }}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              {filePath && (
-                <Image style={styles.image} source={{uri: filePath}} />
-              )}
-              <Buttons
-                task={() => {
-                  ımageSubmit();
-                  setImageModalVisible(false);
-                  setFilePath(null);
-                }}
-                name="Send"
-              />
-              <Buttons
-                task={() => {
-                  setImageModalVisible(false);
-                  setFilePath(null);
-                }}
-                name="Discard"
-              />
-            </View>
-          </View>
-        </Modal>
+          }}
+          galleryTask={selectGallery}
+          mapTask={sendLocation}
+          cameraTask={goCamera}
+        />
+
+        {imageModalVisible && (
+          <ImagePreviewModal
+            state={imageModalVisible}
+            setFalseVisibility={() => {
+              setImageModalVisible(false);
+            }}
+            file={filePath}
+            sendFunction={() => {
+              ımageSubmit();
+            }}
+            setNullFile={() => {
+              setFilePath(null);
+            }}
+          />
+        )}
+
         <ImageBackground
           source={
             theme === 'Light'
               ? require('../../Assets/whiteBackGround.jpg')
               : require('../../Assets/blackBackground.jpg')
           }
-          // Imagebackground view is choosed for messaging area.
           resizeMode="cover"
           style={styles.backGroundImage}>
           <FlatList

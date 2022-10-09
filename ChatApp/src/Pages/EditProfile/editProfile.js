@@ -4,7 +4,14 @@ import styles from './editProfile.style';
 import {useSelector, useDispatch} from 'react-redux';
 import {logOut} from '../../Management/Features/userSlice';
 import LoginForm from '../../Components/LoginForm/LoginForm';
-import {doc, updateDoc} from 'firebase/firestore';
+import {
+  query,
+  where,
+  collection,
+  doc,
+  updateDoc,
+  getDocs,
+} from 'firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import {db, auth} from '../../../config';
 import {setTheme} from '../../Management/Features/themeSlice';
@@ -46,19 +53,28 @@ const EditProfile = () => {
   };
 
   const editProfile = async () => {
-    await updateEmail(auth.currentUser, userEmail)
-      .then(() => {})
-      .catch(error => {
-        console.log('email', error);
-      });
-    await updatePassword(auth.currentUser, userPassword)
-      .then(() => {})
-      .catch(error => {
-        console.log('password', error);
-      });
-    const docRef = doc(db, 'users', user.id);
-    await updateDoc(docRef, {email: userEmail, username: userName});
-    dispatch(logOut(null));
+    const q = query(collection(db, 'users'), where('username', '==', userName));
+    const res = await getDocs(q);
+    if (res.docs.length === 0) {
+      await updateEmail(auth.currentUser, userEmail)
+        .then(() => {})
+        .catch(error => {
+          console.log('email', error);
+        });
+      await updatePassword(auth.currentUser, userPassword)
+        .then(() => {})
+        .catch(error => {
+          console.log('password', error);
+        });
+      const docRef = doc(db, 'users', user.id);
+      await updateDoc(docRef, {email: userEmail, username: userName});
+      dispatch(logOut(null));
+    } else {
+      Alert.alert(
+        'DeepTalk',
+        "'User name exists, please specify another one.'",
+      );
+    }
   };
 
   return (

@@ -23,7 +23,6 @@ import {useIsFocused} from '@react-navigation/native';
 const StatusPages = () => {
   const [filePath, setFilePath] = useState();
   const user = useSelector(state => state.auth.user);
-  console.log('onsnapshot', user);
   const [userId, setUserId] = useState();
   const [activeStatus, setActiveStatus] = useState(false);
   const [statusesList, setStatusesList] = useState([]);
@@ -82,18 +81,14 @@ const StatusPages = () => {
     // eslint-disable-next-line
     const friendsList = user.friends;
     if (friendsList) {
-      console.log('friends', friendsList);
       let result = [];
       friendsList.forEach(async function (item) {
         const docRef = doc(db, 'users', item.friendId);
         const docSnap = await getDoc(docRef);
         const receiver = docSnap.data();
-        console.log('receiver', receiver);
         if (receiver.statuses !== undefined) {
           const statusesArray = receiver.statuses;
-          console.log('lr', statusesArray);
           const lastStatus = statusesArray[statusesArray.length - 1];
-          console.log('lstatutes', lastStatus.date);
           if (
             lastStatus.date.slice(4, 11) === now.slice(4, 11) ||
             (parseInt(lastStatus.date.slice(4, 11)) !== now.slice(4, 11) &&
@@ -108,7 +103,6 @@ const StatusPages = () => {
             };
             result.push(receiverInfo);
           }
-          console.log('before', result);
           setStatusesList(result);
         }
       });
@@ -152,7 +146,6 @@ const StatusPages = () => {
     // eslint-disable-next-line
   }, [userId, isFocused, user]);
 
-  console.log('stapage', user);
   const statusType1 = 'Your statuses';
   const statusType2 = "Friend's statuses";
   return (

@@ -81,7 +81,6 @@ const Profile = () => {
   }, []);
   let friendsInfo = [];
   const getFriends = async () => {
-    console.log('before', user);
     const friendsIds = user.friends;
     friendsIds.forEach(async function (item) {
       const docRef = doc(db, 'users', item.friendId);

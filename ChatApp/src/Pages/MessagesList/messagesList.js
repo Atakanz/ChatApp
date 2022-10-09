@@ -74,7 +74,7 @@ const MessagesList = ({navigation}) => {
   useEffect(() => {
     getChatRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, isFocused]);
+  }, [userId, isFocused, user]);
 
   return (
     <SafeAreaView style={[styles.container, styles[`container${theme}`]]}>

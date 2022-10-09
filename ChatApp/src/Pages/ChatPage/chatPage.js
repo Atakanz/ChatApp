@@ -113,7 +113,7 @@ const ChatPage = ({navigation, route}) => {
       longitude: res.coords.longitude,
       latitude: res.coords.latitude,
     };
-    console.log('location', location);
+
     await updateDoc(doc(db, 'chatRooms', chatId), {
       messages: arrayUnion({
         type: 'location',

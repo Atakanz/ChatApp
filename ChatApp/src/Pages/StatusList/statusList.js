@@ -9,7 +9,7 @@ const StatusList = ({navigation, route}) => {
   const {statusType1, statusType2, user, item} = route.params;
   let statusesInfo = null;
   let statusesList = null;
-  console.log('coming', user);
+
   if (statusType1) {
     statusesInfo = user;
     statusesList = user.statuses;
@@ -18,15 +18,13 @@ const StatusList = ({navigation, route}) => {
     statusesList = item.allStatuses;
   }
   let now = Timestamp.now().toDate().toString();
-  console.log('item', parseInt(statusesList[0].date.slice(16, 18)) + 1);
   const theNewestOnes = statusesList.filter(
     elem =>
       elem.date.slice(4, 11) === now.slice(4, 11) ||
       (parseInt(elem.date.slice(16, 18)) > parseInt(now.slice(16, 18)) - 1 &&
         elem.date.slice(4, 11) !== now.slice(4, 11)),
   );
-  console.log('all', statusesList);
-  console.log('coming', theNewestOnes);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />

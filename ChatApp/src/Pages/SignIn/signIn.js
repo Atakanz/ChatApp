@@ -24,8 +24,7 @@ const SignIn = ({navigation}) => {
   const fetchMyInfo = myId => {
     // eslint-disable-next-line
     const unSub = onSnapshot(doc(db, 'users', myId), (doc) => {
-      doc.exists() && console.log(doc.data());
-      dispatch(setUser(doc.data()));
+      doc.exists() && dispatch(setUser(doc.data()));
     });
     return () => {
       unSub();

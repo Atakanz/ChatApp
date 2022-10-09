@@ -8,19 +8,24 @@ const UserCards = props => {
   let image = null;
   let text = null;
   let location = null;
-  if (props.lastMessageType === 'image') {
-    image = true;
-  } else if (props.lastMessageType === 'text') {
-    text = true;
-  } else {
-    location = true;
+  if (props.lastMessageType) {
+    if (props.lastMessageType === 'image') {
+      image = true;
+    } else if (props.lastMessageType === 'text') {
+      text = true;
+    } else {
+      location = true;
+    }
   }
   const now = Timestamp.now().toDate().toString();
   let time = '';
-  if (now.slice(4, 15) === props.time.slice(4, 15)) {
-    time = props.time.slice(16, 21);
-  } else {
-    time = props.time.slice(4, 15) + ' ' + props.time.slice(16, 21);
+  let messageTime = props?.time;
+  if (messageTime) {
+    if (now.slice(4, 15) === messageTime.slice(4, 15)) {
+      time = messageTime.slice(16, 21);
+    } else {
+      time = messageTime.slice(4, 15);
+    }
   }
   const theme = useSelector(state => state.theme.theme);
   return (
@@ -29,8 +34,8 @@ const UserCards = props => {
         <View style={styles.enabledDirection}>
           <View style={styles.enabledDirection}>
             <View style={styles.viewImg}>
-              {props.link ? (
-                <Image source={{uri: props.link}} style={styles.img} />
+              {props.photoUrl ? (
+                <Image source={{uri: props.photoUrl}} style={styles.img} />
               ) : (
                 <Image
                   source={require('../../Assets/noProfilePhoto.jpg')}
@@ -43,7 +48,10 @@ const UserCards = props => {
                 {props.name}
               </Text>
               {text && (
-                <Text style={[styles.lastMessage, styles[`text${theme}`]]}>
+                <Text
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                  style={[styles.lastMessage, styles[`text${theme}`]]}>
                   {props.lastMessage}
                 </Text>
               )}
@@ -61,7 +69,9 @@ const UserCards = props => {
           </View>
           {props.time && (
             <View style={styles.hourInfo}>
-              <Text>{time}</Text>
+              <Text style={[styles.lastMessage, styles[`text${theme}`]]}>
+                {time}
+              </Text>
             </View>
           )}
         </View>

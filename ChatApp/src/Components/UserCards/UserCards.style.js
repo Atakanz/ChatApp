@@ -2,8 +2,8 @@ import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
     padding: 12,
+    maxHeight: 99,
   },
   enabledDirection: {
     flexDirection: 'row',
@@ -12,7 +12,7 @@ export default StyleSheet.create({
     backgroundColor: '#212121',
   },
   containerLight: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
   },
   img: {
     width: 75,
@@ -37,6 +37,7 @@ export default StyleSheet.create({
   },
   textView: {
     justifyContent: 'center',
+    maxWidth: 230,
   },
   lastMessage: {
     position: 'relative',

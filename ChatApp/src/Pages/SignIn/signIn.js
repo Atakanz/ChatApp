@@ -5,7 +5,7 @@ import LoginForm from '../../Components/LoginForm';
 import styles from './signIn.styles';
 import {setUser} from '../../Management/Features/userSlice';
 import {signInWithEmailAndPassword} from 'firebase/auth';
-import {doc, getDoc} from 'firebase/firestore';
+import {doc, onSnapshot} from 'firebase/firestore';
 import {auth, db} from '../../../config';
 
 const SignIn = ({navigation}) => {
@@ -14,18 +14,24 @@ const SignIn = ({navigation}) => {
   const [userEmail, setUserEmail] = useState(null);
   const [userPassword, setUserPassword] = useState(null);
   const signInButton = () => {
-    signInWithEmailAndPassword(auth, userEmail, userPassword)
-      .then(async response => {
-        const userDoc = doc(db, 'users', response.user.uid);
-        const userRef = await getDoc(userDoc);
-        if (userRef.exists()) {
-          dispatch(setUser(userRef.data()));
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    signInWithEmailAndPassword(auth, userEmail, userPassword).then(
+      async response => {
+        fetchMyInfo(response.user.uid);
+      },
+    );
   };
+
+  const fetchMyInfo = myId => {
+    // eslint-disable-next-line
+    const unSub = onSnapshot(doc(db, 'users', myId), (doc) => {
+      doc.exists() && console.log(doc.data());
+      dispatch(setUser(doc.data()));
+    });
+    return () => {
+      unSub();
+    };
+  };
+
   const signUpButton = () => {
     navigation.navigate('SignUp');
   };

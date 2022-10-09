@@ -35,7 +35,7 @@ A nested form of stack and bottom navigation is made at the beginning of the pro
 
 The sign-in screen prompted users to enter their email addresses and passwords. Following a successful sign-in, the user document in the users collection is retrieved and stored to redux. Here, using the onSnapShot way of fetching, updated firestore data is shown on all necessary pages at once, with user-initiated useEffect. 
 
-After logging in, the web application moves to the bottom tab of the other conditional stack form. Friends' IDs are pulled from the redux and examined on the messages page to see whether any messages are present in the chat rooms associated with these IDs. The currently active chat rooms are located and then shown as flatlist items. On the default header bar of the message pages chat, there is an icon that links to the user search page. Here, only those users that were searched with fully usernames are displayed to the user. Friend request will be added in the next versions of the project.
+After logging in, the application moves to the bottom tab of the other conditional stack form. Friends' IDs are pulled from the redux and examined on the messages page to see whether any messages are present in the chat rooms associated with these IDs. The currently active chat rooms are located and then shown as flatlist items. On the default header bar of the message pages chat, there is an icon that links to the user search page. Here, only those users that were searched with fully usernames are displayed to the user. Friend request will be added in the next versions of the project.
 
 <br />
 <br />

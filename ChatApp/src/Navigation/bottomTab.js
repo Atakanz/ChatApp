@@ -6,7 +6,7 @@ import {useSelector} from 'react-redux';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import MessagesList from '../Pages/MessagesList';
 import Status from '../Pages/StatusPage';
-import SettingStack from './settingsStack';
+import Profile from '../Pages/Profile/profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -67,8 +67,8 @@ export const BottomTab = ({navigation}) => {
         }}
       />
       <Tab.Screen
-        name="Contacts"
-        component={SettingStack}
+        name="Profile"
+        component={Profile}
         options={{
           tabBarIcon: ({color, size}) => (
             <Icon name="account" color={colorSelect} size={30} />
@@ -82,7 +82,5 @@ export const BottomTab = ({navigation}) => {
 const styles = StyleSheet.create({
   rightIcon: {
     marginRight: 20,
-    position: 'relative',
-    top: 7,
   },
 });

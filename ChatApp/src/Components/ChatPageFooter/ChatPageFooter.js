@@ -26,7 +26,13 @@ const ChatPageFooter = props => {
     />
   );
   const smile = (
-    <Icon name="emoticon-excited-outline" size={25} color={colorSelect} />
+    <Icon.Button
+      onPress={props.emojiIconTask}
+      name="emoticon-excited-outline"
+      size={25}
+      color={colorSelect}
+      style={[styles.ıconButton, styles[`ıconButton${theme}`]]}
+    />
   );
   return (
     <SafeAreaView style={[styles.bottomBar, styles[`bottomBar${theme}`]]}>

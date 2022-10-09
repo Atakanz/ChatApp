@@ -9,6 +9,7 @@ import LoginStack from './loginStack';
 import ContactsList from '../Pages/ContactsList';
 import StatusList from '../Pages/StatusList';
 import ChatPage from '../Pages/ChatPage';
+import ImageDetail from '../Pages/ImageDetail';
 import EditProfile from '../Pages/EditProfile/editProfile';
 import ChatPageHeader from '../Components/ChatPageHeader/ChatPageHeader';
 import Map from '../Pages/Map';
@@ -72,6 +73,7 @@ export const MainStack = () => {
             />
             <Stack.Screen name="StatusList" component={StatusList} />
             <Stack.Screen name="Map" component={Map} />
+            <Stack.Screen name="Image" component={ImageDetail} />
           </>
         )}
       </Stack.Navigator>

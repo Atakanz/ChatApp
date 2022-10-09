@@ -28,7 +28,7 @@ export default StyleSheet.create({
   },
   ıconButton: {
     flex: 0,
-    width: 40,
+    width: 35,
     height: 30,
     alignSelf: 'center',
     alignItems: 'center',

@@ -40,29 +40,29 @@ After logging in, the web application moves to the bottom tab of the other condi
 <br />
 <br />
 
-<img src="./AppAssets/MessagesList.jpeg"  width="200"/>
+<img src="./AppAssets/MessagesList.jpeg" width="200"/>
 
 On the chat pages, messages are shown with the onSnapShow way of fetching data so that last messages are shown in the page at once.
 
 <br />
 <br />
 
-<img src="./AppAssets/ChatPage.jpeg" align="left"  width="200"/>
-<img src="./AppAssets/SendImage.jpeg" align="left"  width="200"/>
-<img src="./AppAssets/ChatPageImage.jpeg" align="left"  width="200"/>
+<img src="./AppAssets/ChatPage.jpeg" width="200"/>
+<img src="./AppAssets/SendImage.jpeg" width="200"/>
+<img src="./AppAssets/ChatPageImage.jpeg" width="200"/>
 
 On the status pages, the friends which shared status in last 24 hours are listed. By tapping on the user cards, shared statuses can be seen as gallery. Also, users can share their first stasuses by tapping their user cards or add a new one by tapping header right plus icon.
 
 <br />
 <br />
 
-<img src="./AppAssets/StatusList.jpeg" align="left"  width="200"/>
-<img src="./AppAssets/StatusUnit.jpeg" align="left"  width="200"/>
+<img src="./AppAssets/StatusList.jpeg" width="200"/>
+<img src="./AppAssets/StatusUnit.jpeg" width="200"/>
 
 On profile page, the current information, profile photo and friends list can be seen. The friends list is another way for users to access the chat sites. Users can access the page where they can modify their usernames, passwords, and emails by touching the icon in the top right corner of the header. In the edit profile page, users can also select a light or dark theme here by pressing the theme icon.
 
 <br />
 <br />
 
-<img src="./AppAssets/Profile.jpeg"  width="200"/>
+<img src="./AppAssets/Profile.jpeg" width="200"/>
 
